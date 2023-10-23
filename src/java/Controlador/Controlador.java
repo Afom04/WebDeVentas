@@ -10,7 +10,11 @@ import Modelo.Empleado;
 import Modelo.EmpleadoDAO;
 import Modelo.Producto;
 import Modelo.ProductoDAO;
+import Modelo.Venta;
+import Modelo.VentaDAO;
+import config.GenerarSerie;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
@@ -22,15 +26,26 @@ import javax.servlet.http.HttpServletResponse;
  * @author Hogar
  */
 public class Controlador extends HttpServlet {
-
+    int ide;
     Empleado em = new Empleado();
     EmpleadoDAO edao = new EmpleadoDAO();
     Cliente cl = new Cliente();
     ClienteDAO cdao = new ClienteDAO();
     Producto pr = new Producto();
     ProductoDAO pdao = new ProductoDAO();
-    int ide;
-
+    //venta
+    Venta v = new Venta();
+    List<Venta>lista = new ArrayList<>();
+    int item=0;
+    int cod;
+    String descripcion;
+    double precio;
+    int cant;
+    double subtotal;
+    double totalPagar;
+    //numserie
+    String numeroserie;
+    VentaDAO vdao = new VentaDAO();
     /**
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
      * methods.
@@ -223,6 +238,85 @@ public class Controlador extends HttpServlet {
             request.getRequestDispatcher("Producto.jsp").forward(request, response);
         }
         if (menu.equals("NuevaVenta")) {
+            v=new Venta();
+            switch(accion) {
+                case "BuscarCliente":
+                    String dni = request.getParameter("codigocliente");
+                    cl.setDni(dni);
+                    cl=cdao.buscar(dni);
+                    request.setAttribute("c",cl);
+                    request.setAttribute("nserie", numeroserie);
+                    break;
+                case "BuscarProducto":
+                    int id = Integer.parseInt(request.getParameter("codigoproducto"));
+                    pr = pdao.listarId(id);
+                    request.setAttribute("c",cl);
+                    request.setAttribute("producto", pr);
+                    request.setAttribute("lista", lista);
+                    request.setAttribute("totalpagar", totalPagar);
+                    request.setAttribute("nserie", numeroserie);
+                    break;
+                case "AgregarProducto":
+                    request.setAttribute("c",cl);
+                    totalPagar = 0.0;
+                    item = item+1;
+                    cod = pr.getId();
+                    descripcion = request.getParameter("nomproducto");
+                    precio = Double.parseDouble(request.getParameter("precio"));
+                    cant= Integer.parseInt(request.getParameter("cant"));
+                    subtotal = precio*cant;
+                    
+                    v.setItem(item);
+                    v.setIdproducto(cod);
+                    v.setDescripcionP(descripcion);
+                    v.setPrecio(precio);
+                    v.setCantidad(cant);
+                    v.setSubtotal(subtotal);
+                    lista.add(v);
+                    for (int i=0; i<lista.size(); i++) {
+                        totalPagar=totalPagar +lista.get(i).getSubtotal();
+                    }
+                    
+                    request.setAttribute("totalpagar", totalPagar);
+                    request.setAttribute("lista", lista);
+                    request.setAttribute("nserie", numeroserie);
+                    break;
+                case "GenerarVenta":
+                    //Guardar venta
+                    v.setIdcliente(cl.getId());
+                    v.setIdempleado(8);
+                    v.setNumserie(numeroserie);
+                    v.setFecha("2019-07-09");
+                    v.setMonto(totalPagar);
+                    System.out.println("Desde el objeto"+v.getMonto());
+                    v.setEstado("1");
+                    vdao.guardarVenta(v);
+                    //Guardar detalle venta
+                    int idv = Integer.parseInt(vdao.IdVentas());
+                    for (int i=0; i<lista.size(); i++) {
+                        v = new Venta();
+                        v.setId(idv);
+                        v.setIdproducto(lista.get(i).getIdproducto());
+                        v.setCantidad(lista.get(i).getCantidad());
+                        v.setPrecio(lista.get(i).getPrecio());
+                        vdao.guardarDetalleventas(v);
+                    }
+                    request.setAttribute("nserie", numeroserie);
+                    break;
+                default:
+                    numeroserie = vdao.GenerarSerie();
+                    if (numeroserie==null) {
+                        numeroserie="00000001";
+                        request.setAttribute("nserie", numeroserie);
+                    }
+                    else {
+                        int incrementar = Integer.parseInt(numeroserie);
+                        GenerarSerie gs = new GenerarSerie();
+                        numeroserie = gs.NumeroSerie(incrementar);
+                        request.setAttribute("nserie", numeroserie);
+                    }
+                    request.getRequestDispatcher("RegistrarVenta.jsp").forward(request, response);
+            }
             request.getRequestDispatcher("RegistrarVenta.jsp").forward(request, response);
         }
         if (menu.equals("Principal")) {
