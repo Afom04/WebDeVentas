@@ -17,7 +17,7 @@
     </head>
     <body>
         <div class="d-flex">
-            <div class="col-sm-4 parte01">
+            <div class="col-sm-5 parte01">
                 <div class="card">
                     <form action="Controlador?menu=NuevaVenta" method="post">
                         <div class="card-body">

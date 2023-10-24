@@ -24,7 +24,7 @@ public class VentaDAO {
                 numeroserie=rs.getString(1);
             }
         } catch(Exception e) {
-            
+            System.out.println("Error"+e.getMessage());
         }
         return numeroserie;
     }
@@ -40,7 +40,7 @@ public class VentaDAO {
                 idventas=rs.getString(1);
             }
         }catch(Exception e) {
-            
+            System.out.println("Error"+e.getMessage());
         }
         return idventas;
     }
@@ -60,7 +60,7 @@ public class VentaDAO {
             ps.setString(6, ve.getEstado());
             ps.executeUpdate();
         } catch (Exception e) {
-            
+            System.out.println("Error"+e.getMessage());
         }
         
     }
@@ -75,7 +75,7 @@ public class VentaDAO {
             ps.setDouble(4, venta.getPrecio());
             ps.executeUpdate();
         }catch (Exception e) {
-            
+            System.out.println("Error"+e.getMessage());
         }
         
     }
