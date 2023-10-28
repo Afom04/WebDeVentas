@@ -13,14 +13,15 @@ import Modelo.ProductoDAO;
 import Modelo.Venta;
 import Modelo.VentaDAO;
 import config.GenerarSerie;
+import config.Hash;
 import java.io.IOException;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
-import javax.servlet.ServletException;
-import javax.servlet.http.HttpServlet;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
+import jakarta.servlet.ServletException;
+import jakarta.servlet.http.HttpServlet;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import java.time.LocalDateTime;  
 import java.time.format.DateTimeFormatter;  
 
@@ -29,6 +30,7 @@ import java.time.format.DateTimeFormatter;
  * @author Hogar
  */
 public class Controlador extends HttpServlet {
+    
     int ide;
     Empleado em = new Empleado();
     EmpleadoDAO edao = new EmpleadoDAO();
@@ -74,11 +76,13 @@ public class Controlador extends HttpServlet {
                     String tel = request.getParameter("txtTel");
                     String est = request.getParameter("txtEstado");
                     String user = request.getParameter("txtUsuario");
+                    String pass = Hash.encriptar(request.getParameter("txtPass"));
                     em.setDni(dni);
                     em.setNom(nom);
                     em.setTel(tel);
                     em.setEstado(est);
                     em.setUser(user);
+                    em.setPass(pass);
                     edao.agregar(em);
                     request.getRequestDispatcher("Controlador?menu=Empleado&accion=Listar").forward(request, response);
                     break;
@@ -305,7 +309,6 @@ public class Controlador extends HttpServlet {
 
                 case "GenerarVenta":
                     //stock
-                    
                     for (int i =0; i<lista.size(); i++) {
                         Producto pr = new Producto();
                         int cantidad = lista.get(i).getCantidad();

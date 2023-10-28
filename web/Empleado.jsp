@@ -8,6 +8,14 @@
 <%@page import="Modelo.Empleado"%>
 <%@page import="java.util.ArrayList"%>
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
+<%@page import ="Modelo.Empleado" %>
+<% 
+    HttpSession sesion = request.getSession();
+    System.out.println("Sesion numero desde principal: "+sesion.getId());
+    Empleado emp = (Empleado) sesion.getAttribute("usuario");
+    if (emp!=null) {
+    
+%>
 <!DOCTYPE html>
 <html>
     <head>
@@ -39,6 +47,10 @@
                         <div class="form-group">
                             <label>Usuario</label>
                             <input type="text" value="${empleado.getUser()}" name="txtUsuario" class="form-control">                        
+                        </div>
+                        <div class="form-group">
+                            <label>Contraseña</label>
+                            <input type="text" value="${empleado.getPass()}" name="txtPass" class="form-control">                        
                         </div>
                         <input type="submit" name="accion" value="Agregar" class="btn btn-info">
                         <input type="submit" name="accion" value="Actualizar" class="btn btn-success">
@@ -84,3 +96,8 @@
 
     </body>
 </html>
+<% 
+    }else {
+        request.getRequestDispatcher("index.jsp").forward(request,response);
+    }
+%>

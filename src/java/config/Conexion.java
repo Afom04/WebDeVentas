@@ -15,7 +15,7 @@ public class Conexion {
             con = DriverManager.getConnection(url,user,pass);
             System.out.println("Realiza la conexion de manera exitosa");
         } catch (Exception e) {
-            System.out.println("Error en la conexion" +e.getMessage());
+            System.out.println("Error en la conexion");
         }
         return con;
     }

@@ -1,6 +1,14 @@
 
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
+<%@page import ="Modelo.Empleado" %>
+<% 
+    HttpSession sesion = request.getSession();
+    System.out.println("Sesion numero desde principal: "+sesion.getId());
+    Empleado emp = (Empleado) sesion.getAttribute("usuario");
+    if (emp!=null) {
+    
+%>
 <!DOCTYPE html>
 <html>
     <head>
@@ -17,7 +25,7 @@
     </head>
     <body>
         <div class="d-flex">
-            <div class="col-sm-5 parte01">
+            <div class="col-sm-4 parte01">
                 <div class="card">
                     <form action="Controlador?menu=NuevaVenta" method="post">
                         <div class="card-body">
@@ -119,3 +127,8 @@
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/js/bootstrap.min.js" integrity="sha384-+sLIOodYLS7CIrQpBjl+C7nPvqq+FbNUBDunl/OZv93DB7Ln/533i8e/mZXLi/P+" crossorigin="anonymous"></script>
     </body>
 </html>
+<% 
+    }else {
+        request.getRequestDispatcher("index.jsp").forward(request,response);
+    }
+%>

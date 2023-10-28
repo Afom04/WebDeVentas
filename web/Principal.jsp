@@ -5,6 +5,14 @@
 --%>
 
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
+<%@page import ="Modelo.Empleado" %>
+<% 
+    HttpSession sesion = request.getSession();
+    System.out.println("Sesion numero desde principal: "+sesion.getId());
+    Empleado emp = (Empleado) sesion.getAttribute("usuario");
+    if (emp!=null) {
+    
+%>
 <!DOCTYPE html>
 <html>
     <head>
@@ -13,7 +21,14 @@
 
         <title>JSP Page</title>
     </head>
-    <body>
+    <script type="text/javascript">
+        window.history.forward();
+
+        function noBack() {
+            window.history.forward();
+        }
+    </script>
+    <body onload="noBack();" onpageshow="if (event.persisted) noBack();">
         <div>
             <nav class="d-flex col-sm-12 navbar navbar-expand-lg navbar-light bg-info">
                 <div class="collapse navbar-collapse" id="navbarNav">
@@ -63,3 +78,8 @@
 
     </body>
 </html>
+<% 
+    }else {
+        request.getRequestDispatcher("index.jsp").forward(request,response);
+    }
+%>

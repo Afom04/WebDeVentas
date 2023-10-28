@@ -6,20 +6,25 @@ package Controlador;
 
 import Modelo.Empleado;
 import Modelo.EmpleadoDAO;
+import config.Hash;
 import java.io.IOException;
 import java.io.PrintWriter;
-import javax.servlet.ServletException;
-import javax.servlet.http.HttpServlet;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
+import jakarta.servlet.ServletException;
+import jakarta.servlet.http.HttpServlet;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpSession;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  *
  * @author Hogar
  */
 public class Validar extends HttpServlet {
+
     EmpleadoDAO edao = new EmpleadoDAO();
-    Empleado em = new Empleado();
+
     /**
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
      * methods.
@@ -37,10 +42,10 @@ public class Validar extends HttpServlet {
             out.println("<!DOCTYPE html>");
             out.println("<html>");
             out.println("<head>");
-            out.println("<title>Servlet Validar</title>");            
+            out.println("<title>Servlet Validar</title>");
             out.println("</head>");
             out.println("<body>");
-            out.println("<h1>Servlet Validar at " + request.getContextPath() + "</h1>");
+            out.println("<h1>Saludos " + request.getContextPath() + "</h1>");
             out.println("</body>");
             out.println("</html>");
         }
@@ -75,20 +80,41 @@ public class Validar extends HttpServlet {
         String accion = request.getParameter("accion");
         if (accion.equalsIgnoreCase("Ingresar")) {
             String user = request.getParameter("txtuser");
-            String pass = request.getParameter("txtpass");
-            em=edao.validar(user, pass);
-            if (em.getUser()!=null){
-                request.setAttribute("usuario", em);
-                request.getRequestDispatcher("Controlador?menu=Principal").forward(request,response);
-            }
-            else {
-                request.getRequestDispatcher("index.jsp").forward(request,response);
+            String pass = Hash.encriptar(request.getParameter("txtpass"));
+            Empleado em = new Empleado();
+            em.setUser(user);
+            em.setPass(pass);
+            em = edao.validar(em);
+            if (em.getUser() != null) {
+                HttpSession sesion = request.getSession();
+                System.out.println("Sesion numero: " + sesion.getId());
+                sesion.setAttribute("usuario", em);
+                request.getRequestDispatcher("Controlador?menu=Principal").forward(request, response);
+                //sesion.removeAttribute("usuario");
+                //sesion.invalidate();
+                //
+//                request.setAttribute("usuario", em);
+//                request.getRequestDispatcher("Controlador?menu=Principal").forward(request,response);
+            } else {
+                request.getRequestDispatcher("index.jsp").forward(request, response);
             }
         }
-        else {
-            request.getRequestDispatcher("index.jsp").forward(request,response);
+        //else {
+        //    request.getRequestDispatcher("index.jsp").forward(request,response);
+        //}
+        if (accion.equalsIgnoreCase("Salir")) {
+            System.out.println("Saliendo");
+            HttpSession sesion = request.getSession();
+            response.setHeader("Cache-Control", "no-cache, no-store, must-revalidate"); // HTTP 1.1.
+            response.setHeader("Pragma", "no-cache"); // HTTP 1.0.
+            response.setDateHeader("Expires", 0);
+            sesion.removeAttribute("usuario");
+            sesion.invalidate();
+            response.sendRedirect("index.jsp");
+            
+            //request.getRequestDispatcher("index.jsp").forward(request, response);
         }
-        
+
     }
 
     /**

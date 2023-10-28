@@ -8,6 +8,14 @@
 <%@page import="Modelo.Cliente"%>
 <%@page import="java.util.ArrayList"%>
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
+<%@page import ="Modelo.Empleado" %>
+<% 
+    HttpSession sesion = request.getSession();
+    System.out.println("Sesion numero desde principal: "+sesion.getId());
+    Empleado emp = (Empleado) sesion.getAttribute("usuario");
+    if (emp!=null) {
+    
+%>
 <!DOCTYPE html>
 <html>
     <head>
@@ -78,3 +86,8 @@
 
     </body>
 </html>
+<% 
+    }else {
+        request.getRequestDispatcher("index.jsp").forward(request,response);
+    }
+%>

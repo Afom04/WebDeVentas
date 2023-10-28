@@ -14,14 +14,14 @@ public class EmpleadoDAO {
     PreparedStatement ps;
     ResultSet rs;
     
-    public Empleado validar(String user, String dni) {
+    public Empleado validar(Empleado user) {
         Empleado em = new Empleado();
-        String sql = "select * from empleado where User=? and Dni=?";
+        String sql = "select * from empleado where User=? and Pass=?";
         try {
             con = cn.Conexion();
             ps = con.prepareStatement(sql);
-            ps.setString(1, user);
-            ps.setString(2, dni);
+            ps.setString(1, user.getUser());
+            ps.setString(2, user.getPass());
             rs = ps.executeQuery();
             while (rs.next()) {
                 em.setId(rs.getInt("IdEmpleado"));
@@ -29,9 +29,10 @@ public class EmpleadoDAO {
                 em.setDni(rs.getString("Dni"));
                 em.setNom(rs.getString("Nombres"));
             }
+            System.out.println("Devuelve un empleado de manera exitosa");
         }
         catch (Exception e) {
-            System.out.println("Error"+e.getMessage());
+            System.out.println("Exception: "+e.getMessage());
         }
         return em;
     }
@@ -57,12 +58,12 @@ public class EmpleadoDAO {
             }
             System.out.println("Consulta de manera exitosa");
         } catch(Exception e) {
-            System.out.println("Error"+e.getMessage());
+            System.out.println("Exception: "+e.getMessage());
         }
         return lista;
     }
     public void agregar (Empleado em) {
-        String sql="insert into empleado(Dni, Nombres, Telefono, Estado, User)values(?,?,?,?,?)";
+        String sql="insert into empleado(Dni, Nombres, Telefono, Estado, User, Pass)values(?,?,?,?,?,?)";
         
         try {
             con=cn.Conexion();
@@ -72,10 +73,11 @@ public class EmpleadoDAO {
             ps.setString(3,em.getTel());
             ps.setString(4,em.getEstado());
             ps.setString(5,em.getUser());
+            ps.setString(6,em.getPass());
             ps.executeUpdate();
             System.out.println("Insertó de manera exitosa");
         } catch(Exception e) {
-            System.out.println("Error"+e.getMessage());
+            System.out.println("Exception: "+e.getMessage());
         }
         //return r;
     }
@@ -96,7 +98,7 @@ public class EmpleadoDAO {
             }
             System.out.println("Lista el empleado id manera exitosa");
         } catch(Exception e) {
-            System.out.println("Error"+e.getMessage());
+            System.out.println("Exception: "+e.getMessage());
         }
         return emp;
         
@@ -117,7 +119,7 @@ public class EmpleadoDAO {
             ps.executeUpdate();
             System.out.println("Actualiza de manera exitosa");
         } catch(Exception e) {
-            System.out.println("Error"+e.getMessage());
+            System.out.println("Exception: "+e.getMessage());
         }
         //return r;
     }
@@ -130,7 +132,7 @@ public class EmpleadoDAO {
             System.out.println("Elimina de manera exitosa");
         }
         catch (Exception e) {
-            System.out.println("Error"+e.getMessage());
+            System.out.println("Exception: "+e.getMessage());
         }
     }
 }
