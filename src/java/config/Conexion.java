@@ -1,6 +1,7 @@
 
 package config;
 
+
 import java.sql.Connection;
 import java.sql.DriverManager;
 
@@ -11,7 +12,7 @@ public class Conexion {
     String pass="123456";
     public Connection Conexion() {
         try {
-            Class.forName("com.mysql.jdbc.Driver");
+            Class.forName("com.mysql.cj.jdbc.Driver");
             con = DriverManager.getConnection(url,user,pass);
             System.out.println("Realiza la conexion de manera exitosa");
         } catch (Exception e) {

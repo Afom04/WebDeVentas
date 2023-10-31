@@ -15,22 +15,18 @@ import Modelo.VentaDAO;
 import config.GenerarSerie;
 import config.Hash;
 import java.io.IOException;
-import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.List;
+import java.io.PrintWriter;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import java.time.LocalDateTime;  
-import java.time.format.DateTimeFormatter;  
+import jakarta.servlet.http.HttpSession;
+import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.List;
 
-/**
- *
- * @author Hogar
- */
 public class Controlador extends HttpServlet {
-    
+
     int ide;
     Empleado em = new Empleado();
     EmpleadoDAO edao = new EmpleadoDAO();
@@ -38,9 +34,8 @@ public class Controlador extends HttpServlet {
     ClienteDAO cdao = new ClienteDAO();
     Producto pr = new Producto();
     ProductoDAO pdao = new ProductoDAO();
-    //venta
     Venta v = new Venta();
-    List<Venta>lista = new ArrayList<>();
+    List<Venta> lista = new ArrayList<>();
     int item;
     int cod;
     String descripcion;
@@ -51,6 +46,7 @@ public class Controlador extends HttpServlet {
     //numserie
     String numeroserie;
     VentaDAO vdao = new VentaDAO();
+
     /**
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
      * methods.
@@ -62,8 +58,16 @@ public class Controlador extends HttpServlet {
      */
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
+        HttpSession sesion = request.getSession();
+        Empleado emp = (Empleado) sesion.getAttribute("usuario");
+
         String menu = request.getParameter("menu");
         String accion = request.getParameter("accion");
+
+        if (menu.equalsIgnoreCase("Home")) {
+            //sesion.setAttribute("usuario", emp);
+            request.getRequestDispatcher("/Home.jsp").forward(request, response);
+        }
         if (menu.equals("Empleado")) {
             switch (accion) {
                 case "Listar":
@@ -115,7 +119,7 @@ public class Controlador extends HttpServlet {
                 default:
                     throw new AssertionError();
             }
-            request.getRequestDispatcher("Empleado.jsp").forward(request, response);
+            request.getRequestDispatcher("/Empleado.jsp").forward(request, response);
         }
         //separar para cliente
         if (menu.equals("Clientes")) {
@@ -127,7 +131,7 @@ public class Controlador extends HttpServlet {
                     break;
                 case "Agregar":
                     System.out.println("Agregar para cliente");
-                    
+
                     String dni = request.getParameter("txtDni");
                     String nom = request.getParameter("txtNombres");
                     String tel = request.getParameter("txtDir");
@@ -138,21 +142,21 @@ public class Controlador extends HttpServlet {
                     cl.setEstado(est);
                     cdao.agregar(cl);
                     request.getRequestDispatcher("Controlador?menu=Clientes&accion=Listar").forward(request, response);
-                    
+
                     break;
-                    
+
                 case "Editar":
-                    System.out.println("Editar para cliente");                   
+                    System.out.println("Editar para cliente");
                     ide = Integer.parseInt(request.getParameter("id"));
                     Cliente c = cdao.listarId(ide);
                     request.setAttribute("cliente", c);
                     request.getRequestDispatcher("Controlador?menu=Clientes&accion=Listar").forward(request, response);
-                    
+
                     break;
-                    
+
                 case "Actualizar":
                     System.out.println("Actualizar para cliente");
-                    
+
                     String dni1 = request.getParameter("txtDni");
                     String nom1 = request.getParameter("txtNombres");
                     String dir1 = request.getParameter("txtDir");
@@ -164,22 +168,23 @@ public class Controlador extends HttpServlet {
                     cl.setId(ide);
                     cdao.actualizar(cl);
                     request.getRequestDispatcher("Controlador?menu=Clientes&accion=Listar").forward(request, response);
-                    
+
                     break;
-                    
+
                 case "Delete":
                     System.out.println("Delete para cliente");
-                    
+
                     ide = Integer.parseInt(request.getParameter("id"));
                     cdao.delete(ide);
                     request.getRequestDispatcher("Controlador?menu=Clientes&accion=Listar").forward(request, response);
-                    
+
                     break;
                 default:
                     throw new AssertionError();
             }
-            request.getRequestDispatcher("Clientes.jsp").forward(request, response);
+            request.getRequestDispatcher("/Cliente.jsp").forward(request, response);
         }
+        //
         //separar para producto
         if (menu.equals("Producto")) {
             switch (accion) {
@@ -190,7 +195,7 @@ public class Controlador extends HttpServlet {
                     break;
                 case "Agregar":
                     System.out.println("Agregar para producto");
-                    
+
                     String nom = request.getParameter("txtNombres");
                     String precio = request.getParameter("doublePrecio");
                     String stock = request.getParameter("intStock");
@@ -201,22 +206,22 @@ public class Controlador extends HttpServlet {
                     pr.setEstado(est);
                     pdao.agregar(pr);
                     request.getRequestDispatcher("Controlador?menu=Producto&accion=Listar").forward(request, response);
-                    
+
                     break;
-                    
+
                 case "Editar":
                     System.out.println("Editar para producto");
-                    
+
                     ide = Integer.parseInt(request.getParameter("id"));
                     Producto p = pdao.listarId(ide);
                     request.setAttribute("producto", p);
                     request.getRequestDispatcher("Controlador?menu=Producto&accion=Listar").forward(request, response);
-                    
+
                     break;
-                    
+
                 case "Actualizar":
                     System.out.println("Actualizar para producto");
-                    
+
                     String nom1 = request.getParameter("txtNombres");
                     String precio1 = request.getParameter("doublePrecio");
                     String stock1 = request.getParameter("intStock");
@@ -228,52 +233,52 @@ public class Controlador extends HttpServlet {
                     pr.setId(ide);
                     pdao.actualizar(pr);
                     request.getRequestDispatcher("Controlador?menu=Producto&accion=Listar").forward(request, response);
-                    
+
                     break;
-                    
+
                 case "Delete":
                     System.out.println("Delete para producto");
-                    
+
                     ide = Integer.parseInt(request.getParameter("id"));
                     pdao.delete(ide);
                     request.getRequestDispatcher("Controlador?menu=Producto&accion=Listar").forward(request, response);
-                    
+
                     break;
                 default:
                     throw new AssertionError();
-            }            
+            }
             request.getRequestDispatcher("Producto.jsp").forward(request, response);
         }
         //separar para venta
         if (menu.equals("NuevaVenta")) {
-            v=new Venta();
-            switch(accion) {
+            v = new Venta();
+            switch (accion) {
                 case "BuscarCliente":
                     String dni = request.getParameter("codigocliente");
                     cl.setDni(dni);
-                    cl=cdao.buscar(dni);
-                    request.setAttribute("c",cl);
+                    cl = cdao.buscar(dni);
+                    request.setAttribute("c", cl);
                     request.setAttribute("nserie", numeroserie);
                     break;
                 case "BuscarProducto":
                     int id = Integer.parseInt(request.getParameter("codigoproducto"));
                     pr = pdao.listarId(id);
-                    request.setAttribute("c",cl);
+                    request.setAttribute("c", cl);
                     request.setAttribute("producto", pr);
                     request.setAttribute("lista", lista);
                     request.setAttribute("totalpagar", totalPagar);
                     request.setAttribute("nserie", numeroserie);
                     break;
                 case "AgregarProducto":
-                    request.setAttribute("c",cl);
+                    request.setAttribute("c", cl);
                     totalPagar = 0.0;
-                    item = item+1;
+                    item = item + 1;
                     cod = pr.getId();
                     descripcion = request.getParameter("nomproducto");
                     precio = Double.parseDouble(request.getParameter("precio"));
-                    cant= Integer.parseInt(request.getParameter("cant"));
-                    subtotal = precio*cant;
-                    
+                    cant = Integer.parseInt(request.getParameter("cant"));
+                    subtotal = precio * cant;
+
                     v.setItem(item);
                     v.setIdproducto(cod);
                     v.setDescripcionP(descripcion);
@@ -281,13 +286,14 @@ public class Controlador extends HttpServlet {
                     v.setCantidad(cant);
                     v.setSubtotal(subtotal);
                     lista.add(v);
-                    for (int i=0; i<lista.size(); i++) {
-                        totalPagar=totalPagar +lista.get(i).getSubtotal();
+                    for (int i = 0; i < lista.size(); i++) {
+                        totalPagar = totalPagar + lista.get(i).getSubtotal();
+
                     }
-                    
                     request.setAttribute("totalpagar", totalPagar);
                     request.setAttribute("lista", lista);
                     request.setAttribute("nserie", numeroserie);
+                    request.getRequestDispatcher("Controlador?menu=NuevaVenta&accion=default").forward(request, response);
                     break;
                 /*case "EditarProducto":
                     System.out.println("Editar para producto en ventas");                   
@@ -300,28 +306,32 @@ public class Controlador extends HttpServlet {
                 case "ActualizarProducto":
                     
                     break;    
-                */    
+                 */
                 case "EliminarProducto":
                     ide = Integer.parseInt(request.getParameter("id"));
-                    
-                    request.getRequestDispatcher("Controlador?menu=NuevaVenta").forward(request, response);                    
+                    lista.remove(ide - 1);
+                    for (int i = 0; i < lista.size(); i++) {
+                        lista.get(i).setId(i + 1);
+                    }
+                    request.setAttribute("lista", lista);
+                    request.getRequestDispatcher("Controlador?menu=NuevaVenta&accion=default").forward(request, response);
                     break;
 
                 case "GenerarVenta":
                     //stock
-                    for (int i =0; i<lista.size(); i++) {
+                    for (int i = 0; i < lista.size(); i++) {
                         Producto pr = new Producto();
                         int cantidad = lista.get(i).getCantidad();
                         int idproducto = lista.get(i).getIdproducto();
                         ProductoDAO aO = new ProductoDAO();
-                        pr=aO.listarId(idproducto);
+                        pr = aO.listarId(idproducto);
                         int stockactual = pr.getStock() - cantidad;
                         aO.actualizarstock(idproducto, stockactual);
                     }
-                    
+
                     //Guardar venta
                     v.setIdcliente(cl.getId());
-                    v.setIdempleado(8);
+                    v.setIdempleado(emp.getId());
                     v.setNumserie(numeroserie);
                     LocalDate fechaDate = java.time.LocalDate.now();
                     v.setFecha(fechaDate.toString());
@@ -330,7 +340,7 @@ public class Controlador extends HttpServlet {
                     vdao.guardarVenta(v);
                     //Guardar detalle venta
                     int idv = Integer.parseInt(vdao.IdVentas());
-                    for (int i=0; i<lista.size(); i++) {
+                    for (int i = 0; i < lista.size(); i++) {
                         v = new Venta();
                         v.setId(idv);
                         v.setIdproducto(lista.get(i).getIdproducto());
@@ -338,17 +348,17 @@ public class Controlador extends HttpServlet {
                         v.setPrecio(lista.get(i).getPrecio());
                         vdao.guardarDetalleventas(v);
                     }
+                    lista.clear();
                     request.getRequestDispatcher("Controlador?menu=NuevaVenta&accion=default").forward(request, response);
                     break;
                 default:
-                    lista.clear();
-                    item=0;
+
+                    item = 0;
                     numeroserie = vdao.GenerarSerie();
-                    if (numeroserie==null) {
-                        numeroserie="00000001";
+                    if (numeroserie == null) {
+                        numeroserie = "00000001";
                         request.setAttribute("nserie", numeroserie);
-                    }
-                    else {
+                    } else {
                         int incrementar = Integer.parseInt(numeroserie);
                         GenerarSerie gs = new GenerarSerie();
                         numeroserie = gs.NumeroSerie(incrementar);
@@ -356,11 +366,14 @@ public class Controlador extends HttpServlet {
                     }
                     request.getRequestDispatcher("RegistrarVenta.jsp").forward(request, response);
             }
+            //lista.clear();
             request.getRequestDispatcher("RegistrarVenta.jsp").forward(request, response);
         }
         if (menu.equals("Principal")) {
             request.getRequestDispatcher("Principal.jsp").forward(request, response);
+            //request.getRequestDispatcher("Controlador?menu=Home").forward(request, response);
         }
+
     }
 
     // <editor-fold defaultstate="collapsed" desc="HttpServlet methods. Click on the + sign on the left to edit the code.">
