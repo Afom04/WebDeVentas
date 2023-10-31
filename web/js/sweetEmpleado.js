@@ -35,9 +35,8 @@ function eliminarUsuario(cod) {
         url: url,
         async: true,
         success: function (r) {
-
+            
         }
     });
 
 }
-

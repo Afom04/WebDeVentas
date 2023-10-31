@@ -5,6 +5,7 @@ import config.Conexion;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -14,14 +15,14 @@ public class EmpleadoDAO {
     PreparedStatement ps;
     ResultSet rs;
     
-    public Empleado validar(Empleado user) {
+    public Empleado validar(Empleado emp) {
         Empleado em = new Empleado();
         String sql = "select * from empleado where User=? and Pass=?";
         try {
             con = cn.Conexion();
             ps = con.prepareStatement(sql);
-            ps.setString(1, user.getUser());
-            ps.setString(2, user.getPass());
+            ps.setString(1, emp.getUser());
+            ps.setString(2, emp.getPass());
             rs = ps.executeQuery();
             while (rs.next()) {
                 em.setId(rs.getInt("IdEmpleado"));
@@ -32,7 +33,7 @@ public class EmpleadoDAO {
             System.out.println("Devuelve un empleado de manera exitosa");
         }
         catch (Exception e) {
-            System.out.println("Exception: "+e.getMessage());
+            
         }
         return em;
     }
@@ -54,11 +55,10 @@ public class EmpleadoDAO {
                 em.setEstado(rs.getString(5));
                 em.setUser(rs.getString(6));
                 lista.add(em);
-                
             }
             System.out.println("Consulta de manera exitosa");
         } catch(Exception e) {
-            System.out.println("Exception: "+e.getMessage());
+            
         }
         return lista;
     }
@@ -77,7 +77,7 @@ public class EmpleadoDAO {
             ps.executeUpdate();
             System.out.println("Insertó de manera exitosa");
         } catch(Exception e) {
-            System.out.println("Exception: "+e.getMessage());
+            
         }
         //return r;
     }
@@ -98,7 +98,7 @@ public class EmpleadoDAO {
             }
             System.out.println("Lista el empleado id manera exitosa");
         } catch(Exception e) {
-            System.out.println("Exception: "+e.getMessage());
+            
         }
         return emp;
         
@@ -119,7 +119,7 @@ public class EmpleadoDAO {
             ps.executeUpdate();
             System.out.println("Actualiza de manera exitosa");
         } catch(Exception e) {
-            System.out.println("Exception: "+e.getMessage());
+            
         }
         //return r;
     }
@@ -131,8 +131,8 @@ public class EmpleadoDAO {
             ps.executeUpdate();
             System.out.println("Elimina de manera exitosa");
         }
-        catch (Exception e) {
-            System.out.println("Exception: "+e.getMessage());
+        catch (SQLException e) {
+            System.out.println("Error" + e.getMessage());
         }
     }
 }
